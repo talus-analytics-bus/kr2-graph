@@ -34,34 +34,6 @@ def get_dons_disease_set(rows):
     return dons_diseases
 
 
-# get ncbi metadata from id
-def get_ncbi_metadata(ncbi_id):
-    params = {"db": "Taxonomy", "id": ncbi_id}
-    soup = ncbi.api_soup("efetch", params)
-
-    taxon = soup.TaxaSet.Taxon
-
-    taxon_node = {
-        "ScientificName": taxon.ScientificName.getText(),
-        "OtherNames": taxon.OtherNames.getText(),
-        "ParentTaxId": taxon.ParentTaxId.getText(),
-        "Rank": taxon.Rank.getText(),
-        "Division": taxon.Division.getText(),
-        "GeneticCode": {"GCId": taxon.GCId.getText(), "GCName": taxon.GCName.getText()},
-        "MitoGeneticCode": {
-            "MGCId": taxon.MGCId.getText(),
-            "MGCName": taxon.MGCName.getText(),
-        },
-        # "Lineage": taxon.Lineage.getText(),
-        # "LineageEx":taxon.LineageEx.getText(),
-    }
-
-    for taxon in taxon.LineageEx.children:
-        print(taxon)
-
-    return taxon_node
-
-
 # merge ncbi lineage into graph
 def merge_lineage(metadata):
     pass
@@ -76,7 +48,7 @@ def merge_lineage(metadata):
 # print(get_dons_disease_set(rows))
 ncbi_id = ncbi.id_search("h1n1")
 
-metadata = get_ncbi_metadata(ncbi_id)
+metadata = ncbi.get_metadata(ncbi_id)
 print(metadata)
 
 NEO4J_DRIVER.close()
