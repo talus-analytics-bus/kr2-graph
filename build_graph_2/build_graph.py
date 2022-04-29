@@ -1,22 +1,11 @@
-import re
 import os
 import csv
-import json
-import pprint
-import boto3
-import psycopg2
-import itertools
-import requests
-import lxml
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
-from bs4 import BeautifulSoup, NavigableString, Tag
 
 import ncbi
 
 load_dotenv()
-pp = pprint.PrettyPrinter(indent=4)
-
 ## pull env vars for auth and create neo4j driver
 NEO4J_AUTH = (os.getenv("NEO4J_USER"), os.getenv("NEO4J_PASS"))
 NEO4J_URI = os.getenv("NEO4J_URI")
@@ -43,16 +32,6 @@ def get_dons_disease_set(rows):
             )
 
     return dons_diseases
-
-
-# get ID from text name
-def get_ncbi_id(name):
-    params = {"db": "Taxonomy", "term": name}
-
-    soup = get_ncbi_api("esearch", params)
-    ncbi_id = soup.find("Id").getText()
-
-    return ncbi_id
 
 
 # get ncbi metadata from id
