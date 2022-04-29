@@ -1,7 +1,9 @@
 import os
 import csv
+import logging
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
+import time
 
 import ncbi
 
@@ -13,6 +15,8 @@ NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
 SESSION = NEO4J_DRIVER.session()
 
 # subgraph = SESSION.run("MATCH (n) RETURN n LIMIT 10")
+
+logging.basicConfig(filename='build_graph_debug.log', encoding='utf-8', level=logging.DEBUG)
 
 
 def read_dons_csv():
@@ -28,7 +32,7 @@ def get_dons_disease_set(rows):
     for row in rows:
         if row["DiseaseLevel1"] == "Influenza A" and row["DiseaseLevel2"] != "NA":
             dons_diseases.add(
-                row["DONid"] + "|" + row["DiseaseLevel1"] + "|" + row["DiseaseLevel2"]
+                row["DiseaseLevel1"] + "|" + row["DiseaseLevel2"]
             )
 
     return dons_diseases
@@ -43,12 +47,21 @@ rows = read_dons_csv()
 keys = get_dons_disease_set(rows)
 
 for key in keys:
-    DONid, Disease1, Disease2 = key.split("|")
+    Disease1, Disease2 = key.split("|")
     print("\n", Disease2.strip())
 
     ncbi_id = ncbi.id_search(Disease2)
 
-    print(ncbi_id)
+    if not ncbi_id:
+        ## save broken search terms to file
+        with open('not_found.txt', 'a') as f:
+            f.write(f'{Disease1}, {Disease2}')
+            f.write('\n')
+            f.close()
+
+    time.sleep(.4)
+
+# print(ncbi.id_search('H5N6'))
 
 # print(get_dons_disease_set(read_dons_csv()))
 

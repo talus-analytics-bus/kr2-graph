@@ -1,0 +1,7 @@
+Influenza A, H7N2
+Influenza A, H7N4
+Influenza A, H5N6
+Influenza A, H7NX
+Influenza A, H7N7
+Influenza A, H5NX
+Influenza A, H3N2: S-OtrH3N2
