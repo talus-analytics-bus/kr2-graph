@@ -39,9 +39,22 @@ def merge_lineage(metadata):
     pass
 
 
-ncbi_id = ncbi.id_search("h1n1")
-metadata = ncbi.get_metadata(ncbi_id)
+rows = read_dons_csv()
+keys = get_dons_disease_set(rows)
 
-print(metadata)
+for key in keys:
+    DONid, Disease1, Disease2 = key.split("|")
+    print("\n", Disease2.strip())
+
+    ncbi_id = ncbi.id_search(Disease2)
+
+    print(ncbi_id)
+
+# print(get_dons_disease_set(read_dons_csv()))
+
+# ncbi_id = ncbi.id_search("h1n1")
+# metadata = ncbi.get_metadata(ncbi_id)
+
+# print(metadata)
 
 NEO4J_DRIVER.close()
