@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from bs4 import BeautifulSoup, NavigableString, Tag
 
+import ncbi
+
 load_dotenv()
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -22,14 +24,6 @@ NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
 SESSION = NEO4J_DRIVER.session()
 
 # subgraph = SESSION.run("MATCH (n) RETURN n LIMIT 10")
-
-
-def get_ncbi_api(eutil, params):
-    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/{eutil}.fcgi"
-    response = requests.get(url, params)
-    soup = BeautifulSoup(response.content, features="xml")
-
-    return soup
 
 
 def read_dons_csv():
@@ -64,7 +58,7 @@ def get_ncbi_id(name):
 # get ncbi metadata from id
 def get_ncbi_metadata(ncbi_id):
     params = {"db": "Taxonomy", "id": ncbi_id}
-    soup = get_ncbi_api("efetch", params)
+    soup = ncbi.api_soup("efetch", params)
 
     taxon = soup.TaxaSet.Taxon
 
@@ -101,7 +95,8 @@ def merge_lineage(metadata):
 
 # rows = read_dons_csv()
 # print(get_dons_disease_set(rows))
-ncbi_id = get_ncbi_id("h1n1")
+ncbi_id = ncbi.id_search("h1n1")
+
 metadata = get_ncbi_metadata(ncbi_id)
 print(metadata)
 
