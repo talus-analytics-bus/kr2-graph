@@ -18,8 +18,6 @@ NEO4J_AUTH = (os.getenv("NEO4J_USER"), os.getenv("NEO4J_PASS"))
 NEO4J_URI = os.getenv("NEO4J_URI")
 NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
 
-print(NEO4J_AUTH)
-
 
 def get_db_cursor():
     session = boto3.session.Session()
@@ -51,6 +49,7 @@ def add_diseases():
         for disease in diseases:
             session.run(f'CREATE (n:Disease {{ name: "{disease[0]}" }})')
 
+    ## dump disease list to file
     # diseaselist = [disease[0] for disease in list(diseases)]
     # diseaselist.sort()
     # for disease in diseaselist:
@@ -116,7 +115,7 @@ def link_symptoms():
                 f'CREATE (a)-[r:CAUSES {{frequency: "{link[2]}"}}]->(b) '
             )
 
-
+# replace countries list with Geonames
 def read_countries_csv():
     rows = []
     with open("data/Lookup Countries-Grid view.csv") as countries_file:
@@ -127,7 +126,7 @@ def read_countries_csv():
 
     return rows
 
-
+# replace relationships with geonames
 def add_countries():
     countries = read_countries_csv()
 
@@ -137,7 +136,7 @@ def add_countries():
                 f'CREATE (n:Country {{ iso3: "{country[0]}", name: "{country[1]}" }})'
             )
 
-
+# connect WHO regions to geonames
 def add_regions():
     countries = read_countries_csv()
     regions = set([row[2] for row in countries])
@@ -189,6 +188,7 @@ def add_dons():
                 "})"
             )
 
+    ## dump DONs disease list to file
     # diseaselist = list(set([dons[key][0]["DiseaseLevel1"] for key in dons.keys()]))
     # diseaselist.sort()
     # for disease in diseaselist:
@@ -267,7 +267,7 @@ def get_nih_taxonomy():
 
         title = titles[depth]
 
-        limit = 2000000000000000
+        limit = 20
         for li in itertools.islice(soup.children, limit):
             if isinstance(li, NavigableString):
                 continue
@@ -354,7 +354,7 @@ def link_dons_influenza():
         )
         session.run(
             f'MATCH (d:DON {{DONid: "{DONid}"}}), '
-            f' (s:Serotype {{name: "{DiseaseLevel2} subtype"}}) '
+            f'  (s:Serotype {{name: "{DiseaseLevel2} subtype"}}) '
             f"MERGE (d)-[r:MENTIONS]->(s)"
         )
 
