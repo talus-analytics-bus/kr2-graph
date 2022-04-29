@@ -39,16 +39,9 @@ def merge_lineage(metadata):
     pass
 
 
-# print(subgraph)
-
-# for node in iter(subgraph):
-#     print(node.data())
-
-# rows = read_dons_csv()
-# print(get_dons_disease_set(rows))
 ncbi_id = ncbi.id_search("h1n1")
-
 metadata = ncbi.get_metadata(ncbi_id)
+
 print(metadata)
 
 NEO4J_DRIVER.close()
