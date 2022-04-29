@@ -28,7 +28,7 @@ def get_ncbi_api(eutil, params):
     response = requests.get(
         f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/{eutil}.fcgi", params=params
     )
-    soup = BeautifulSoup(response.content, "xml")
+    soup = BeautifulSoup(response.content, features="xml")
 
     return soup
 
