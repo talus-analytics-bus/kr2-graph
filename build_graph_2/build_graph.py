@@ -1,9 +1,10 @@
 import os
 import csv
-from loguru import logger
+from pprint import pprint
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
-import time
+
+# import time
 
 import ncbi
 
@@ -38,24 +39,26 @@ def merge_lineage(metadata):
 
 
 if __name__ == "__main__":
-    rows = read_dons_csv()
-    keys = get_dons_disease_set(rows)
+    # rows = read_dons_csv()
+    # keys = get_dons_disease_set(rows)
 
-    for key in keys:
-        Disease1, Disease2 = key.split("|")
-        ncbi_id = ncbi.id_search(Disease2)
+    # for key in keys:
+    #     Disease1, Disease2 = key.split("|")
+    #     ncbi_id = ncbi.id_search(Disease2)
 
-        if not ncbi_id:
-            ## save broken search terms to file
-            with open("not_found.txt", "a") as f:
-                f.write(f"{Disease1}, {Disease2}")
-                f.write("\n")
-                f.close()
+    #     # if not ncbi_id:
+    #     #     ## save broken search terms to file
+    #     #     with open("not_found.txt", "a") as f:
+    #     #         f.write(f"{Disease1}, {Disease2}")
+    #     #         f.write("\n")
+    #     #         f.close()
 
-        # resepect api rate limit
-        time.sleep(0.4)
+    #     # resepect api rate limit
+    #     time.sleep(0.4)
 
-# print(ncbi.id_search('H5N6'))
+    ncbi_id = ncbi.id_search("H9N2")
+    ncbi_metadata = ncbi.get_metadata(ncbi_id)
+    pprint(ncbi_metadata)
 
 # print(get_dons_disease_set(read_dons_csv()))
 
