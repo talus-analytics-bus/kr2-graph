@@ -1,0 +1,190 @@
+diseases,dons_diseases
+,Anthrax
+Acinetobacter baumannii,
+Adenovirus,
+African Trypanosomiasis,
+Amebiasis,
+Amoeba,
+Anaplasmosis,
+Anisakis,
+Antimicrobial resistance,
+Arenavirus,
+Ascariasis,
+Aspergillosis,
+Avian Influenza,
+Avian Influenza H5N1,
+Avian Influenza H5N6,
+Avian Influenza H7N2,
+Avian Influenza H7N9,
+Babesiosis,
+Bartonella,
+Blastomycosis,
+,Botulism
+Bronchitis/Bronchiolitis,
+,Buffalopox
+Burkholderia cepacia,
+C. difficile,
+COVID-19,
+Campylobacter,
+Carbapenem-resistant enterobacteriaceae (CRE),
+Cat Scratch Fever,
+Chagas,
+Chikungunya,Chikungunya
+Cholera,Cholera
+Citrobacter freundii,
+Clostridium perfringens enterotoxin (CPE),
+Cold,
+Colitis,
+Coronavirus,
+Crimean-Congo Hemorrhagic Fever,Crimean-Congo haemorrhagic fever
+Cryptococcosis,
+Cryptosporidium,
+Cytomegalovirus,
+Dengue,Dengue fever
+Diarrhea,
+Diphtheria,Diptheria
+Diphyllobothriasis,
+Dysentery,Dysentery
+E. coli,E. coli
+Eastern Equine Encephalitis,
+Ebola,Ebola virus
+,Elizabethkingia anophelis
+Enterobacter cloacae,
+Enterococcus,
+Enterovirus,Enterovirus
+Enterovirus 68,
+Fever,
+Filariasis,
+Flea-borne disease,
+Foodborne Illness,
+Gastroenteritis,
+Giardiasis,
+,Gonorrhea
+Gnathostoma,
+Gnathostomiasis,
+,Guillain-Barre syndrome
+H. influenzae,
+H. pylori,
+,"Hand, foot, and mouth disease"
+Hantavirus,Hantavirus
+"Helminths, miscellaneous",
+,Hemolytic uremic syndrome
+Hemorrhagic Fever,
+Hepatitis,
+Hepatitis A,Hepatitis A
+Hepatitis B,
+Hepatitis C,
+Hepatitis D,
+Hepatitis E,Hepatitis E
+Histoplasmosis,
+Hookworm,
+Hospital-Related Infection,
+Human Bocavirus,
+,Human coronavirus OC43
+,Human immunodeficiency virus
+Hymenolepiasis,
+Influenza,
+Influenza A,
+Influenza H1N1,
+Influenza H3N2,
+Isosporiasis,
+Japanese Encephalitis,Japanese encephalitis
+Klebsiella pneumoniae,
+Kyasanur Forest Disease,
+La Crosse Encephalitis,
+Lassa Fever,Lassa fever
+Legionnaires',Legionellosis
+Leptospirosis,Leptospirosis
+,Leishmaniasis
+Listeriosis,Listeriosis
+,Lujo mammarenavirus
+Lyme Disease,
+MERS,MERS-CoV
+MRSA,
+Machupo Virus,
+Malaria,Malaria
+Marburg Fever,Marburg fever
+,Measles
+,Meningococcal disease
+Metagonimiasis,
+,Monkeypox
+Mononucleosis,
+Mucormycosis,
+Mumps,
+Murray Valley encephalitis,
+"Mycobacteria, non-TB",
+Nipah/Hendra Virus,Nipah virus
+Norovirus,
+,O'nyong-nyong fever
+,Oropouche fever
+Otitis media,
+P. aeruginosa,
+,Pertussis
+PMSIS,
+Paracoccidioidomycosis,
+Paragonimus,
+Parotitis,
+Plague,Plague
+Pneumococcal Pneumonia,
+Pneumonia,Pseudomonas aeruginosa
+,Polio
+Powassan virus,
+Proteus mirabilis,
+"Protozoa, miscellaneous",
+Q Fever,
+,Rabies
+Relapsing Fever,Tick-borne relapsing fever
+Respiratory Illness,
+Respiratory Syncytial Virus,
+Rickettsia,
+Rift Valley Fever,Rift Valley fever
+River Blindness,
+Rocky Mountain Spotted Fever,
+Ross River Virus,
+Rotavirus,
+SARS,SARS-CoV
+Salmonella,Salmonella enterica
+Scarlet Fever,
+Scrub Typhus,
+Serratia marcescens,
+Shigellosis,
+,Smallpox
+St. Louis Encephalitis,St. Louis encephalitis
+,Staphylococcus
+Stenotrophomonas maltophilia,
+Strep,Streptococcus suis
+,Syndromic: cardiovascular
+,Syndromic: diarrhoeal
+,Syndromic: gastrointestinal
+,Syndromic: haemorrhagic
+,Syndromic: neurological
+,Syndromic: respiratory
+Taeniasis,
+Tick-borne Encephalitis,
+Tick-borne disease,
+,Toxicity: bromide poisoning
+,Toxicity: lead poisoning
+,Toxicity: miscellaneous
+Toxocariasis,
+Toxoplasmosis,
+,Transmissible spongiform encephalopathy
+Trichinosis,
+Trichuriasis,
+Trypanosomiasis,
+Tuberculosis,Tuberculosis
+,Tularemia
+Typhoid,Typhoid
+Typhus,Typhus
+,Unspecified
+Valley Fever,Coccidioidomycosis
+Vancomycin Resistant Enterococci (VRE),
+Venezuelan Equine Encephalitis,Venezuelan equine encephalitis
+Vibrio parahaemolyticus,
+Vibrio vulnificus,
+"Vibrio, noncholera",
+Waterborne Illness,
+West Nile Virus,West Nile virus
+Western Equine Encephalitis,
+Whooping Cough,
+Yellow Fever,Yellow fever
+Zika virus,Zika virus disease

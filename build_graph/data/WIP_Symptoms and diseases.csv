@@ -1,0 +1,42 @@
+﻿Unique ID,Disease,Symptom,value
+1,COVID-19,Loss of taste,5.0
+2,COVID-19,Coughing,1.0
+3,Influenza,Fever,5.0
+4,Influenza,Chills,5.0
+5,Influenza,Coughing,5.0
+6,Influenza,Sore throat,4.0
+7,Influenza,Runny or stuffy nose,4.0
+8,Influenza,Muscle or body aches,3.0
+9,Influenza,Headaches,3.0
+10,Influenza,Fatigue,3.0
+11,Influenza,Vomiting,1.0
+12,Influenza,Diarrhea,1.0
+13,COVID-19,Loss of smell,5.0
+14,COVID-19,Fever,4.0
+15,COVID-19,Chills,4.0
+16,COVID-19,Shortness of breath,4.0
+17,COVID-19,Fatigue ,2.0
+18,COVID-19,Muscle or body aches,2.0
+19,COVID-19,Headaches,2.0
+20,COVID-19,Sore throat,3.0
+21,COVID-19,Runny or stuffy nose,3.0
+22,COVID-19,Vomiting,1.0
+23,COVID-19,Diarrhea,1.0
+24,Respiratory Syncytial Virus,Runny or stuffy nose,5.0
+25,Respiratory Syncytial Virus,Decrease in appetite,5.0
+26,Respiratory Syncytial Virus,Coughing,3.0
+27,Respiratory Syncytial Virus,Sneezing,3.0
+28,Respiratory Syncytial Virus,Fever,3.0
+29,Respiratory Syncytial Virus,Wheezing,4.0
+30,Respiratory Syncytial Virus,Irritability ,1.0
+31,Respiratory Syncytial Virus,Decreased activity,2.0
+32,Ebola,Fever,3.0
+33,Ebola,Muscle or body aches,3.0
+34,Ebola,Fatigue ,4.0
+35,Ebola,Sore throat,2.0
+36,Ebola,Loss of appetite,4.0
+37,Ebola,Gastrointestinal symptoms ,5.0
+38,Ebola,Bleeding or bruising,5.0
+39,Ebola,Vomiting,5.0
+40,Ebola,Diarrhea,5.0
+41,Ebola,Abdominal pain,5.0
