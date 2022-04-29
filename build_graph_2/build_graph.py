@@ -23,9 +23,12 @@ SESSION = NEO4J_DRIVER.session()
 
 # subgraph = SESSION.run("MATCH (n) RETURN n LIMIT 10")
 
+
 def get_ncbi_api(eutil, params):
-    response = requests.get(f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/{eutil}.fcgi', params=params)
-    soup = BeautifulSoup(response.content, 'xml')
+    response = requests.get(
+        f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/{eutil}.fcgi", params=params
+    )
+    soup = BeautifulSoup(response.content, "xml")
 
     return soup
 
@@ -37,6 +40,7 @@ def read_dons_csv():
 
     return rows
 
+
 def get_dons_disease_set(rows):
     dons_diseases = set()
     for row in rows:
@@ -44,29 +48,25 @@ def get_dons_disease_set(rows):
             dons_diseases.add(
                 row["DONid"] + "|" + row["DiseaseLevel1"] + "|" + row["DiseaseLevel2"]
             )
-    
+
     return dons_diseases
+
 
 # get ID from text name
 def get_ncbi_id(name):
-    params = {
-        "db": "Taxonomy",
-        "term": name
-    }
+    params = {"db": "Taxonomy", "term": name}
 
-    soup = get_ncbi_api('esearch', params)
-    ncbi_id = soup.find('Id').getText()
+    soup = get_ncbi_api("esearch", params)
+    ncbi_id = soup.find("Id").getText()
 
     return ncbi_id
 
-# get ncbi metadata from id 
+
+# get ncbi metadata from id
 def get_ncbi_metadata(ncbi_id):
-    params = {
-        "db":"Taxonomy",
-        "id":ncbi_id
-    }
-    soup = get_ncbi_api('efetch', params)
-    
+    params = {"db": "Taxonomy", "id": ncbi_id}
+    soup = get_ncbi_api("efetch", params)
+
     taxon = soup.TaxaSet.Taxon
 
     taxon_node = {
@@ -75,10 +75,7 @@ def get_ncbi_metadata(ncbi_id):
         "ParentTaxId": taxon.ParentTaxId.getText(),
         "Rank": taxon.Rank.getText(),
         "Division": taxon.Division.getText(),
-        "GeneticCode": {
-            "GCId": taxon.GCId.getText(),
-            "GCName": taxon.GCName.getText()
-        },
+        "GeneticCode": {"GCId": taxon.GCId.getText(), "GCName": taxon.GCName.getText()},
         "MitoGeneticCode": {
             "MGCId": taxon.MGCId.getText(),
             "MGCName": taxon.MGCName.getText(),
@@ -87,14 +84,9 @@ def get_ncbi_metadata(ncbi_id):
         # "LineageEx":taxon.LineageEx.getText(),
     }
 
-
     for taxon in taxon.LineageEx.children:
         print(taxon)
 
-
-
-
-    
     return taxon_node
 
 
@@ -110,7 +102,7 @@ def merge_lineage(metadata):
 
 # rows = read_dons_csv()
 # print(get_dons_disease_set(rows))
-ncbi_id = get_ncbi_id('h1n1')
+ncbi_id = get_ncbi_id("h1n1")
 metadata = get_ncbi_metadata(ncbi_id)
 print(metadata)
 
