@@ -25,9 +25,8 @@ SESSION = NEO4J_DRIVER.session()
 
 
 def get_ncbi_api(eutil, params):
-    response = requests.get(
-        f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/{eutil}.fcgi", params=params
-    )
+    url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/{eutil}.fcgi"
+    response = requests.get(url, params)
     soup = BeautifulSoup(response.content, features="xml")
 
     return soup
