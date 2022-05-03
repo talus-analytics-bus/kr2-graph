@@ -10,7 +10,6 @@ def get_metadata(ncbi_id):
 
     taxon_metadata = {
         "ScientificName": taxon.ScientificName.getText(),
-        "OtherNames": taxon.OtherNames.getText(),
         "ParentTaxId": taxon.ParentTaxId.getText(),
         "Rank": taxon.Rank.getText(),
         "Division": taxon.Division.getText(),
@@ -25,6 +24,9 @@ def get_metadata(ncbi_id):
         "PubDate": taxon.PubDate.getText(),
         # "LineageEx":taxon.LineageEx.getText(),
     }
+
+    if taxon.otherNames:
+        taxon["OtherNames"] = (taxon.OtherNames.getText(),)
 
     lineage_ex = []
     for taxon in taxon.LineageEx.children:
