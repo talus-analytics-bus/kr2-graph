@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 load_dotenv()
 pp = pprint.PrettyPrinter(indent=4)
 
-## pull env vars for auth and create neo4j driver
+# pull env vars for auth and create neo4j driver
 NEO4J_AUTH = (os.getenv("NEO4J_USER"), os.getenv("NEO4J_PASS"))
 NEO4J_URI = os.getenv("NEO4J_URI")
 NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
@@ -49,7 +49,7 @@ def add_diseases():
         for disease in diseases:
             session.run(f'CREATE (n:Disease {{ name: "{disease[0]}" }})')
 
-    ## dump disease list to file
+    # dump disease list to file
     # diseaselist = [disease[0] for disease in list(diseases)]
     # diseaselist.sort()
     # for disease in diseaselist:
@@ -115,6 +115,7 @@ def link_symptoms():
                 f'CREATE (a)-[r:CAUSES {{frequency: "{link[2]}"}}]->(b) '
             )
 
+
 # replace countries list with Geonames
 def read_countries_csv():
     rows = []
@@ -126,6 +127,7 @@ def read_countries_csv():
 
     return rows
 
+
 # replace relationships with geonames
 def add_countries():
     countries = read_countries_csv()
@@ -135,6 +137,7 @@ def add_countries():
             session.run(
                 f'CREATE (n:Country {{ iso3: "{country[0]}", name: "{country[1]}" }})'
             )
+
 
 # connect WHO regions to geonames
 def add_regions():
@@ -247,7 +250,7 @@ def link_dons_diseases():
             if disease_name in name_map.keys():
                 session.run(
                     "MATCH (a:DON), (b:Disease) "
-                    f'WHERE a.DONid = "{DONid}" AND b.name = "{name_map[disease_name]}" '
+                    f'WHERE a.DONid="{DONid}" AND b.name="{name_map[disease_name]}" '
                     "CREATE (a)-[r:MENTIONS]->(b) "
                 )
 
@@ -256,8 +259,10 @@ def get_nih_taxonomy():
     ## HTML response is malformed and missing closing tags so
     ## I'll substitute by parsing the corrected HTML from a file
     # url = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi"
-    # data = b"mode=Undef&name=&srchmode=1&keep=1&unlock=1&butt=Display&mode=Undef&old_id=197911&lvl=2&filter="
-    # data = b"mode=Undef&name=&srchmode=1&keep=1&unlock=1&butt=Display&mode=Undef&old_id=11308&lvl=3&filter="
+    # data = b"mode=Undef&name=&srchmode=1&keep=1&unlock=1&butt=Display&mode
+    #   =Undef&old_id=197911&lvl=2&filter="
+    # data = b"mode=Undef&name=&srchmode=1&keep=1&unlock=1&butt=Display&mode
+    #   =Undef&old_id=11308&lvl=3&filter="
     # req = urllib.request.Request(url=url, data=data)
 
     titles = ["family", "genus", "species", "serotype"]
@@ -319,8 +324,10 @@ def add_and_link_taxonomy():
 
         # link to parent
         if parent:
+            parent_level = parent["level"].capitalize()
+            node_level = node["level"].capitalize()
             session.run(
-                f'MATCH (a:{parent["level"].capitalize()}), (b:{node["level"].capitalize()}) '
+                f"MATCH (a:{parent_level}), (b:{node_level}) "
                 f'WHERE a.name = "{parent["name"]}" AND b.name = "{node["name"]}" '
                 "CREATE (a)-[:CONTAINS]->(b) "
             )

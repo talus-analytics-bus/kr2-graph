@@ -1,16 +1,18 @@
 import os
 import csv
-from pprint import pprint
+
+# from pprint import pprint
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
-from loguru import logger
+
+# from loguru import logger
 
 import time
 
 import ncbi
 
 load_dotenv()
-## pull env vars for auth and create neo4j driver
+# pull env vars for auth and create neo4j driver
 NEO4J_AUTH = (os.getenv("NEO4J_USER"), os.getenv("NEO4J_PASS"))
 NEO4J_URI = os.getenv("NEO4J_URI")
 NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)

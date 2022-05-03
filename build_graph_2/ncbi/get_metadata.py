@@ -1,6 +1,7 @@
 import ncbi
 from bs4 import Tag
 
+
 # get ncbi metadata from id
 def get_metadata(ncbi_id):
     params = {"db": "Taxonomy", "id": ncbi_id}
