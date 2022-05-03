@@ -37,53 +37,6 @@ def get_dons_disease_set(rows):
     return dons_diseases
 
 
-def merge_taxon(taxon):
-    pprint(taxon["ScientificName"])
-    rank = taxon["Rank"].replace(" ", "_")
-    SESSION.run(
-        f'MERGE (n:{rank} {{name: "{taxon["ScientificName"]}", '
-        f'  Rank: "{rank}", '
-        f'  TaxId: "{taxon["TaxId"]}" '
-        f"}})"
-    )
-
-
-def merge_taxon_link(parent, child):
-    parent_rank = parent["Rank"].replace(" ", "_")
-    child_rank = child["Rank"].replace(" ", "_")
-    SESSION.run(
-        f'MATCH (parent:{parent_rank} {{name: "{parent["ScientificName"]}"}}), '
-        f'  (child:{child_rank} {{name: "{child["ScientificName"]}"}}) '
-        f"MERGE (parent)-[r:CONTAINS]->(child) "
-    )
-
-
-def merge_lineage(lineage):
-    for index, taxon in enumerate(lineage):
-        # merge parent node
-        merge_taxon(taxon)
-
-        # if there are children
-        if index + 1 < len(lineage):
-            child = lineage[index + 1]
-            # merge child node
-            merge_taxon(child)
-            # merge relationship
-            merge_taxon_link(taxon, child)
-
-
-def merge_ncbi_metadata_response(ncbi_id, ncbi_metadata):
-    merge_taxon({**ncbi_metadata, "TaxId": ncbi_id})
-
-    merge_taxon(ncbi_metadata["LineageEx"][-1])
-
-    merge_taxon_link(
-        ncbi_metadata["LineageEx"][-1], {**ncbi_metadata, "TaxId": ncbi_id}
-    )
-
-    merge_lineage(ncbi_metadata["LineageEx"])
-
-
 if __name__ == "__main__":
     rows = read_dons_csv()
     keys = get_dons_disease_set(rows)
@@ -94,14 +47,17 @@ if __name__ == "__main__":
 
         if ncbi_id:
             ncbi_metadata = ncbi.get_metadata(ncbi_id)
-            merge_ncbi_metadata_response(ncbi_id, ncbi_metadata)
+            taxon = {**ncbi_metadata, "TaxId": ncbi_id}
 
-        else:
-            ## save broken search terms to file
-            with open("not_found.txt", "a") as f:
-                f.write(f"{Disease1}, {Disease2}")
-                f.write("\n")
-                f.close()
+            # add taxon and lineage to database
+            ncbi.merge_taxon(taxon, SESSION)
+
+        # else:
+        #     ## save broken search terms to file
+        #     with open("not_found.txt", "a") as f:
+        #         f.write(f"{Disease1}, {Disease2}")
+        #         f.write("\n")
+        #         f.close()
 
         # resepect api rate limit
         time.sleep(0.4)
