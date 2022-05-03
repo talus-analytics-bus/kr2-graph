@@ -9,6 +9,8 @@ def get_metadata(ncbi_id):
 
     taxon = soup.TaxaSet.Taxon
 
+    # print(soup.prettify())
+
     taxon_metadata = {
         "ScientificName": taxon.ScientificName.getText(),
         "ParentTaxId": taxon.ParentTaxId.getText(),

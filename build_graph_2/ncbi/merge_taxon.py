@@ -11,7 +11,7 @@ def merge_taxon_node(taxon, SESSION):
     rank = sanitize_rank(taxon["Rank"])
 
     SESSION.run(
-        f'MERGE (n:{rank} {{name: "{taxon["ScientificName"]}", '
+        f'MERGE (n:Taxon:{rank} {{name: "{taxon["ScientificName"]}", '
         f'  Rank: "{rank}", '
         f'  TaxId: "{taxon["TaxId"]}" '
         f"}})"
@@ -24,12 +24,9 @@ def merge_taxon_link(parent, child, SESSION):
         f'-[:CONTAINS]->({child["ScientificName"]})'
     )
 
-    parent_rank = sanitize_rank(parent["Rank"])
-    child_rank = sanitize_rank(child["Rank"])
-
     SESSION.run(
-        f'MATCH (parent:{parent_rank} {{name: "{parent["ScientificName"]}"}}), '
-        f'  (child:{child_rank} {{name: "{child["ScientificName"]}"}}) '
+        f'MATCH (parent:Taxon {{TaxId: "{parent["TaxId"]}"}}), '
+        f'  (child:Taxon {{TaxId: "{child["TaxId"]}"}}) '
         f"MERGE (parent)-[:CONTAINS]->(child) "
     )
 

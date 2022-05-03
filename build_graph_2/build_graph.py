@@ -64,14 +64,9 @@ if __name__ == "__main__":
         # resepect api rate limit
         time.sleep(0.4)
 
-# ncbi_id = ncbi.id_search("anthrax")
-# ncbi_metadata = ncbi.get_metadata(ncbi_id)
+    # ncbi_id = ncbi.id_search("Salmonella enterica")
+    # ncbi_metadata = ncbi.get_metadata(ncbi_id)
 
-
-# print(get_dons_disease_set(read_dons_csv()))
-
-# ncbi_id = ncbi.id_search("h1n1")
-# metadata = ncbi.get_metadata(ncbi_id)
 
 # print(metadata)
 

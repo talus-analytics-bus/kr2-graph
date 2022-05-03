@@ -9,6 +9,7 @@ def id_search(name):
     params = {"db": "Taxonomy", "term": name}
 
     soup = ncbi.api_soup("esearch", params)
+    # print(soup.prettify())
 
     try:
         ncbi_id = soup.find("Id").getText()
