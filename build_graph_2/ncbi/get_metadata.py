@@ -2,14 +2,13 @@ import ncbi
 from bs4 import Tag
 
 
-# get ncbi metadata from id
 def get_metadata(ncbi_id):
+    """Request metadata by NCBI taxonomy ID, and return cleaned object"""
+
     params = {"db": "Taxonomy", "id": ncbi_id}
     soup = ncbi.api_soup("efetch", params)
 
     taxon = soup.TaxaSet.Taxon
-
-    # print(soup.prettify())
 
     taxon_metadata = {
         "ScientificName": taxon.ScientificName.getText(),
@@ -25,12 +24,12 @@ def get_metadata(ncbi_id):
         "CreateDate": taxon.CreateDate.getText(),
         "UpdateDate": taxon.UpdateDate.getText(),
         "PubDate": taxon.PubDate.getText(),
-        # "LineageEx":taxon.LineageEx.getText(),
     }
 
     if taxon.otherNames:
         taxon["OtherNames"] = (taxon.OtherNames.getText(),)
 
+    # parse lineage
     lineage_ex = []
     for taxon in taxon.LineageEx.children:
         if isinstance(taxon, Tag):
@@ -43,7 +42,5 @@ def get_metadata(ncbi_id):
             )
 
     taxon_metadata["LineageEx"] = lineage_ex
-
-    # print()
 
     return taxon_metadata

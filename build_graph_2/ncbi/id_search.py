@@ -2,14 +2,14 @@ import ncbi
 from loguru import logger
 
 
-# get ID from text name
 def id_search(name):
+    """Get ID from text search, using NCBI esearch eutil"""
+
     logger.info(f"Searching ncbi for term {name}")
 
     params = {"db": "Taxonomy", "term": name}
 
     soup = ncbi.api_soup("esearch", params)
-    # print(soup.prettify())
 
     try:
         ncbi_id = soup.find("Id").getText()
