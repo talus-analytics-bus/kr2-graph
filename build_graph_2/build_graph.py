@@ -1,5 +1,4 @@
 import os
-import csv
 
 # from pprint import pprint
 from dotenv import load_dotenv
@@ -9,6 +8,7 @@ from neo4j import GraphDatabase
 
 import time
 
+import dons
 import ncbi
 
 load_dotenv()
@@ -19,29 +19,9 @@ NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
 SESSION = NEO4J_DRIVER.session()
 
 
-def read_dons_csv():
-    rows = []
-    with open("../build_graph/data/DONdatabase.csv") as dons_file:
-        rows = list(csv.DictReader(dons_file))
-
-    return rows
-
-
-def get_dons_disease_set(rows):
-    dons_diseases = set()
-    for row in rows:
-        # if row["DiseaseLevel1"] == "Influenza A" and row["DiseaseLevel2"] != "NA":
-        if row["DiseaseLevel2"] != "NA":
-            dons_diseases.add(row["DiseaseLevel1"] + "|" + row["DiseaseLevel2"])
-        else:
-            dons_diseases.add(row["DiseaseLevel1"] + "|")
-
-    return dons_diseases
-
-
 if __name__ == "__main__":
-    rows = read_dons_csv()
-    keys = get_dons_disease_set(rows)
+    # rows = read_dons_csv()
+    keys = dons.get_unique_diseases()
 
     for key in keys:
         Disease1, Disease2 = key.split("|")
