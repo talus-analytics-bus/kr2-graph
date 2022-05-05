@@ -2,7 +2,7 @@ from loguru import logger
 
 
 def sanitize_rank(rank):
-    return rank.replace(" ", "_")
+    return rank.title().replace(" ", "")
 
 
 def merge_taxon_node(taxon, SESSION):

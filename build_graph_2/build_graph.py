@@ -2,6 +2,7 @@ import os
 import time
 
 # from pprint import pprint
+from loguru import logger
 from functools import cache
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
@@ -56,12 +57,82 @@ def flunet_to_ncbi_id(key):
 
 if __name__ == "__main__":
     flunet_rows = flunet.get_rows()
-    for i in range(0, 3):
-        for key in flunet_rows[i].keys():
-            print(flunet_to_ncbi_id(key))
 
-    # for row in flunet_rows[0:5]:
-    # print(row)
+    merged_countries = set()
+    merged_transmission_zones = set()
+    merged_taxons = set()
+
+    detection_cols = {}
+    for key in flunet_rows[0].keys():
+        ncbi_id = flunet_to_ncbi_id(key)
+        if ncbi_id:
+            detection_cols[key] = ncbi_id
+
+    for index, row in enumerate(flunet_rows):
+        # skip rows where none were collected
+        if row["Collected"] == "" or row["Collected"] == "0":
+            continue
+
+        if row["Territory"] not in merged_countries:
+            logger.info(f' MERGE country node ({row["Territory"]})')
+            SESSION.run(f'MERGE (n:Country:Geo {{name: "{row["Territory"]}"}})')
+            merged_countries.add(row["Territory"])
+
+        if row["Transmission zone"] not in merged_transmission_zones:
+            logger.info(f' MERGE transmission zone node ({row["Transmission zone"]})')
+            SESSION.run(
+                f'MERGE (n:TransmissionZone:Geo {{name: "{row["Transmission zone"]}"}})'
+            )
+            logger.info(
+                f"Linking Territory {row['Territory']} to {row['Transmission zone']}"
+            )
+
+            # This only linked the first instance of the country to the zone... oops
+            SESSION.run(
+                f'MATCH (country:Country {{name: "{row["Territory"]}"}}), '
+                f'  (zone:TransmissionZone {{name: "{row["Transmission zone"]}"}}) '
+                f"MERGE (country)-[:IN]->(zone) "
+            )
+            merged_transmission_zones.add(row["Transmission zone"])
+
+        logger.info(f"Merging FluNet Report {index}")
+        SESSION.run(
+            f"MERGE (n:FluNet:Report {{"
+            f"  flunetRow: {index}, "
+            f'  start: date("{row["Start date"]}"), '
+            f'  end: date("{row["End date"]}"), '
+            f'  specimensCollected: {row["Collected"] or 0}, '
+            f'  specimensProcessed: {row["Processed"] or 0} '
+            f"}})"
+        )
+
+        logger.info(f"Linking FluNet Report {index} to {row['Territory']}")
+        SESSION.run(
+            f"MATCH (report:FluNet {{flunetRow: {index}}}), "
+            f'  (country:Country {{name: "{row["Territory"]}"}}) '
+            f"MERGE (report)-[:IN]->(country) "
+        )
+
+        for col in detection_cols.keys():
+            # skip detection columns with no values
+            # or with zero specimens detected
+            if not row[col] or row[col] == "0":
+                continue
+
+            ncbi_id = detection_cols[col]
+
+            if ncbi_id not in merged_taxons:
+                ncbi_metadata = ncbi.get_metadata(ncbi_id)
+                taxon = {**ncbi_metadata, "TaxId": ncbi_id}
+                ncbi.merge_taxon(taxon, SESSION)
+                merged_taxons.add(ncbi_id)
+
+            logger.info(f"Linking FluNet Report {index} to Taxon {ncbi_id}")
+            SESSION.run(
+                f"MATCH (report:FluNet {{flunetRow: {index}}}), "
+                f'  (taxon:Taxon {{TaxId: "{ncbi_id}"}}) '
+                f"MERGE (report)-[:DETECTED {{count: {row[col]}}}]->(taxon) "
+            )
 
     # ncbi_id = ncbi.id_search("Salmonella enterica")
     # ncbi_metadata = ncbi.get_metadata(ncbi_id)
