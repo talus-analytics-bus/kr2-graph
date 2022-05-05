@@ -5,8 +5,10 @@ import time
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 
+
 import dons
 import ncbi
+import flunet
 
 load_dotenv()
 # pull env vars for auth and create neo4j driver
@@ -16,7 +18,7 @@ NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
 SESSION = NEO4J_DRIVER.session()
 
 
-def merge_dons_ncbi():
+def db_merge_dons_ncbi():
     keys = dons.get_unique_diseases()
 
     for key in keys:
@@ -42,7 +44,11 @@ def merge_dons_ncbi():
 
 
 if __name__ == "__main__":
-    pass
+    flunet_rows = flunet.get_rows()
+    for key in flunet_rows[0].keys():
+        print(flunet.column_to_ncbi(key))
+    # for row in flunet_rows[0:5]:
+    # print(row)
 
     # ncbi_id = ncbi.id_search("Salmonella enterica")
     # ncbi_metadata = ncbi.get_metadata(ncbi_id)
