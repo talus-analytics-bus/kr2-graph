@@ -1,12 +1,9 @@
 import os
+import time
 
 # from pprint import pprint
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
-
-# from loguru import logger
-
-import time
 
 import dons
 import ncbi
@@ -19,7 +16,7 @@ NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
 SESSION = NEO4J_DRIVER.session()
 
 
-if __name__ == "__main__":
+def merge_dons_ncbi():
     keys = dons.get_unique_diseases()
 
     for key in keys:
@@ -42,6 +39,10 @@ if __name__ == "__main__":
 
         # resepect api rate limit
         time.sleep(0.4)
+
+
+if __name__ == "__main__":
+    pass
 
     # ncbi_id = ncbi.id_search("Salmonella enterica")
     # ncbi_metadata = ncbi.get_metadata(ncbi_id)
