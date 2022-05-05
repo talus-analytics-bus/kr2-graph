@@ -20,7 +20,6 @@ SESSION = NEO4J_DRIVER.session()
 
 
 if __name__ == "__main__":
-    # rows = read_dons_csv()
     keys = dons.get_unique_diseases()
 
     for key in keys:
