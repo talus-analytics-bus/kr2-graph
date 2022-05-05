@@ -2,6 +2,7 @@ import os
 import time
 
 # from pprint import pprint
+from functools import cache
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 
@@ -43,10 +44,22 @@ def db_merge_dons_ncbi():
         time.sleep(0.4)
 
 
+@cache
+def flunet_to_ncbi_id(key):
+    ncbi_term = flunet.column_to_ncbi(key)
+
+    if ncbi_term:
+        return ncbi.id_search(ncbi_term)
+
+    return None
+
+
 if __name__ == "__main__":
     flunet_rows = flunet.get_rows()
-    for key in flunet_rows[0].keys():
-        print(flunet.column_to_ncbi(key))
+    for i in range(0, 3):
+        for key in flunet_rows[i].keys():
+            print(flunet_to_ncbi_id(key))
+
     # for row in flunet_rows[0:5]:
     # print(row)
 
