@@ -32,7 +32,7 @@ def db_merge_dons_ncbi():
             taxon = {**ncbi_metadata, "TaxId": ncbi_id}
 
             # add taxon and lineage to database
-            ncbi.merge_taxon(taxon, SESSION)
+            ncbi.CREATE_taxon(taxon, SESSION)
 
         # else:
         #     ## save broken search terms to file
@@ -55,6 +55,8 @@ def flunet_to_ncbi_id(key):
     return None
 
 
+logger.disable("__main__")
+
 if __name__ == "__main__":
     flunet_rows = flunet.get_rows()
 
@@ -73,47 +75,34 @@ if __name__ == "__main__":
         if row["Collected"] == "" or row["Collected"] == "0":
             continue
 
-        if row["Transmission zone"] not in merged_transmission_zones:
-            logger.info(f' MERGE transmission zone node ({row["Transmission zone"]})')
+        print(f"index {index}")
+        zone = row["Transmission zone"]
+        country = row["Territory"]
+        if zone not in merged_transmission_zones:
+            logger.info(f" CREATE transmission zone node ({zone})")
+            SESSION.run(f'CREATE (n:TransmissionZone:Geo {{name: "{zone}"}})')
+
+            merged_transmission_zones.add(zone)
+
+        if country not in merged_countries:
+            print(f"Country: {country}")
+            logger.info(f" CREATE country node ({country})")
             SESSION.run(
-                f'MERGE (n:TransmissionZone:Geo {{name: "{row["Transmission zone"]}"}})'
-            )
-            logger.info(
-                f"Linking Territory {row['Territory']} to {row['Transmission zone']}"
-            )
-            merged_transmission_zones.add(row["Transmission zone"])
-
-        if row["Territory"] not in merged_countries:
-            logger.info(f' MERGE country node ({row["Territory"]})')
-            SESSION.run(f'MERGE (n:Country:Geo {{name: "{row["Territory"]}"}})')
-
-            # also join the country to the transmission zone
-            SESSION.run(
-                f'MATCH (country:Country {{name: "{row["Territory"]}"}}), '
-                f'  (zone:TransmissionZone {{name: "{row["Transmission zone"]}"}}) '
-                f"MERGE (country)-[:IN]->(zone) "
+                f'MATCH  (zone:TransmissionZone {{name: "{zone}"}}) '
+                f'CREATE (n:Country:Geo {{name: "{country}"}})-[:IN]->(zone) '
             )
 
-            merged_countries.add(row["Territory"])
+            merged_countries.add(country)
 
-        logger.info(f"Merging FluNet Report {index}")
-        SESSION.run(
-            f"MERGE (n:FluNet:Report {{"
-            f"  flunetRow: {index}, "
-            f'  start: date("{row["Start date"]}"), '
-            f'  end: date("{row["End date"]}"), '
-            f'  specimensCollected: {row["Collected"] or 0}, '
-            f'  specimensProcessed: {row["Processed"] or 0} '
-            f"}})"
-        )
+        # logger.info(f"Linking FluNet Report {index} to {row['Territory']}")
+        # SESSION.run(
+        #     f"MATCH (report:FluNet {{flunetRow: {index}}}), "
+        #     f'  (country:Country {{name: "{country}"}}) '
+        #     f"CREATE (report)-[:IN]->(country) "
+        # )
 
-        logger.info(f"Linking FluNet Report {index} to {row['Territory']}")
-        SESSION.run(
-            f"MATCH (report:FluNet {{flunetRow: {index}}}), "
-            f'  (country:Country {{name: "{row["Territory"]}"}}) '
-            f"MERGE (report)-[:IN]->(country) "
-        )
-
+        match_statements = ""
+        create_statements = ""
         for col in detection_cols.keys():
             # skip detection columns with no values
             # or with zero specimens detected
@@ -128,13 +117,40 @@ if __name__ == "__main__":
                 ncbi.merge_taxon(taxon, SESSION)
                 merged_taxons.add(ncbi_id)
 
-            logger.info(f"Linking FluNet Report {index} to Taxon {ncbi_id}")
-
-            SESSION.run(
-                f"MATCH (report:FluNet {{flunetRow: {index}}}), "
-                f'  (taxon:Taxon {{TaxId: "{ncbi_id}"}}) '
-                f"MERGE (report)-[:DETECTED {{count: {row[col]}}}]->(taxon) "
+            # logger.info(f"Linking FluNet Report {index} to Taxon {ncbi_id}")
+            match_statements += (
+                f'\nMATCH (taxon{ncbi_id}:Taxon {{TaxId: "{ncbi_id}"}}) '
             )
+            create_statements += f"\nCREATE (report)-[:DETECTED {{count: {row[col]}}}]->(taxon{ncbi_id}) "
+
+        logger.info(f"Merging FluNet Report {index}")
+        # print(
+        #     "\n\n"
+        #     f'MATCH (c:Country {{name: "{country}"}}) '
+        #     + match_statements
+        #     + f"\nCREATE (report:FluNet:Report {{"
+        #     f"  flunetRow: {index}, "
+        #     f'  start: date("{row["Start date"]}"), '
+        #     f"  duration: duration({{days: 7}}), "
+        #     f'  collected: {row["Collected"] or 0}, '
+        #     f'  processed: {row["Processed"] or 0}, '
+        #     f'  positive: {row["Total positive"] or 0}, '
+        #     f'  negative: {row["Total negative"] or 0} '
+        #     f"}})-[:IN]->(c)" + create_statements
+        # )
+        SESSION.run(
+            f'MATCH (c:Country {{name: "{country}"}}) '
+            + match_statements
+            + f"\nCREATE (report:FluNet:Report {{"
+            f"  flunetRow: {index}, "
+            f'  start: date("{row["Start date"]}"), '
+            f"  duration: duration({{days: 7}}), "
+            f'  collected: {row["Collected"] or 0}, '
+            f'  processed: {row["Processed"] or 0}, '
+            f'  positive: {row["Total positive"] or 0}, '
+            f'  negative: {row["Total negative"] or 0} '
+            f"}})-[:IN]->(c)" + create_statements
+        )
 
     # ncbi_id = ncbi.id_search("Salmonella enterica")
     # ncbi_metadata = ncbi.get_metadata(ncbi_id)
