@@ -73,11 +73,6 @@ if __name__ == "__main__":
         if row["Collected"] == "" or row["Collected"] == "0":
             continue
 
-        if row["Territory"] not in merged_countries:
-            logger.info(f' MERGE country node ({row["Territory"]})')
-            SESSION.run(f'MERGE (n:Country:Geo {{name: "{row["Territory"]}"}})')
-            merged_countries.add(row["Territory"])
-
         if row["Transmission zone"] not in merged_transmission_zones:
             logger.info(f' MERGE transmission zone node ({row["Transmission zone"]})')
             SESSION.run(
@@ -86,14 +81,20 @@ if __name__ == "__main__":
             logger.info(
                 f"Linking Territory {row['Territory']} to {row['Transmission zone']}"
             )
+            merged_transmission_zones.add(row["Transmission zone"])
 
-            # This only linked the first instance of the country to the zone... oops
+        if row["Territory"] not in merged_countries:
+            logger.info(f' MERGE country node ({row["Territory"]})')
+            SESSION.run(f'MERGE (n:Country:Geo {{name: "{row["Territory"]}"}})')
+
+            # also join the country to the transmission zone
             SESSION.run(
                 f'MATCH (country:Country {{name: "{row["Territory"]}"}}), '
                 f'  (zone:TransmissionZone {{name: "{row["Transmission zone"]}"}}) '
                 f"MERGE (country)-[:IN]->(zone) "
             )
-            merged_transmission_zones.add(row["Transmission zone"])
+
+            merged_countries.add(row["Territory"])
 
         logger.info(f"Merging FluNet Report {index}")
         SESSION.run(
@@ -128,6 +129,7 @@ if __name__ == "__main__":
                 merged_taxons.add(ncbi_id)
 
             logger.info(f"Linking FluNet Report {index} to Taxon {ncbi_id}")
+
             SESSION.run(
                 f"MATCH (report:FluNet {{flunetRow: {index}}}), "
                 f'  (taxon:Taxon {{TaxId: "{ncbi_id}"}}) '
