@@ -11,6 +11,7 @@ jmespath==1.0.0
 loguru==0.6.0
 lxml==4.8.0
 mypy-extensions==0.4.3
+-e git+https://github.com/talus-analytics-bus/kr2-graph.git@f4e09564d61e504c3cdceb56531f7d418015652b#egg=ncbi&subdirectory=ncbi
 neo4j==4.4.3
 pathspec==0.9.0
 platformdirs==2.5.2
