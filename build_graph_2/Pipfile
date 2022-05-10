@@ -31,6 +31,7 @@ soupsieve = "==2.3.2.post1"
 tomli = "==2.0.1"
 typing-extensions = "==4.2.0"
 urllib3 = "==1.26.9"
+ncbi = {subdirectory = "ncbi", ref = "feature/ncbi-package", git = "https://github.com/talus-analytics-bus/kr2-graph.git"}
 
 [dev-packages]
 

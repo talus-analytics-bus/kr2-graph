@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c3c27b7d31825f51111001734c17b2444f9ecf0e4b9a2140bbaf39ee642fdba5"
+            "sha256": "27291a1b64961280c8ee396df605c81fc8bd51aa709a535f3ceb6bcf6e55ddef"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -198,6 +198,11 @@
             ],
             "index": "pypi",
             "version": "==0.4.3"
+        },
+        "ncbi": {
+            "git": "https://github.com/talus-analytics-bus/kr2-graph.git",
+            "ref": "31aaa0185d774ec17f4140118078113679c64489",
+            "subdirectory": "ncbi"
         },
         "neo4j": {
             "hashes": [
