@@ -9,6 +9,7 @@ setup(
         "requests",
         "beautifulsoup4",
         "loguru",
+        "lxml",
     ],
     packages=['ncbi'],
     classifiers=[
