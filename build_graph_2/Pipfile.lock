@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "fcd2704d9f3d9d8c8a94be68111bc513ce62135d9057622432288c10959aeeec"
+            "sha256": "c3c27b7d31825f51111001734c17b2444f9ecf0e4b9a2140bbaf39ee642fdba5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -198,10 +198,6 @@
             ],
             "index": "pypi",
             "version": "==0.4.3"
-        },
-        "ncbi": {
-            "path": "./../ncbi",
-            "version": "==0.0.1"
         },
         "neo4j": {
             "hashes": [
