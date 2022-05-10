@@ -18,11 +18,13 @@ def id_search(name):
         errors = soup.find("ErrorList")
         warnings = soup.find("WarningList")
 
-        for error in errors.children:
-            logger.error(f"{error.name}: {error.getText()}")
+        if hasattr(errors, 'children'):
+            for error in errors.children:
+                logger.error(f"{error.name}: {error.getText()}")
 
-        for warning in warnings.children:
-            logger.warning(f"{warning.name}: {warning.getText()}")
+        if hasattr(warnings, 'children'):
+            for warning in warnings.children:
+                logger.warning(f"{warning.name}: {warning.getText()}")
 
         return None
 
