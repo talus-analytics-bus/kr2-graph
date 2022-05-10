@@ -5,7 +5,7 @@ from loguru import logger
 def id_search(name):
     """Get ID from text search, using NCBI esearch eutil"""
 
-    logger.info(f"Searching ncbi for term {name}")
+    logger.info(f"Searching NCBI for term {name}")
 
     params = {"db": "Taxonomy", "term": name}
 
