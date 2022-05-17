@@ -1,12 +1,9 @@
 import os
 import time
 
-# from pprint import pprint
 from loguru import logger
-from functools import cache
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
-
 
 import dons
 import ncbi
@@ -19,7 +16,9 @@ NEO4J_URI = os.getenv("NEO4J_URI")
 NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
 SESSION = NEO4J_DRIVER.session()
 
-
+# testing NCBI functions by getting the disease
+# columns from the DONs and building the required
+# NCBI taxonomy for linking them in the graph
 def db_merge_dons_ncbi():
     keys = dons.get_unique_diseases()
 
@@ -45,8 +44,6 @@ def db_merge_dons_ncbi():
         time.sleep(0.4)
 
 
-logger.disable("__main__")
-
 if __name__ == "__main__":
     flunet_rows = flunet.get_rows()
 
@@ -59,7 +56,7 @@ if __name__ == "__main__":
     agent_groups = flunet.get_agent_groups(columns)
     # Make sure the agent groups and their
     # taxons exist in the database
-    flunet.merge_agent_groups(agent_groups)
+    flunet.merge_agent_groups(agent_groups, SESSION)
 
     for index, row in enumerate(flunet_rows):
         # skip rows where no samples were collected
@@ -87,8 +84,8 @@ if __name__ == "__main__":
 
             merged_countries.add(country)
 
-        match_statements = ""
-        create_statements = ""
+        match_agent_groups = ""
+        create_group_relationships = ""
         for col in agent_groups.keys():
             # skip detection columns with no values
             # or with zero specimens detected
@@ -97,15 +94,17 @@ if __name__ == "__main__":
 
             ncbi_id = agent_groups[col]
 
-            match_statements += (
+            match_agent_groups += (
                 f'\nMATCH (taxon{ncbi_id}:Taxon {{TaxId: "{ncbi_id}"}}) '
             )
-            create_statements += f"\nCREATE (report)-[:DETECTED {{count: {row[col]}}}]->(taxon{ncbi_id}) "
+            create_group_relationships += (
+                f"CREATE (report)-[:DETECTED {{count: {row[col]}}}]->(taxon{ncbi_id}) "
+            )
 
         logger.info(f"Merging FluNet Report {index}")
         SESSION.run(
             f'MATCH (c:Country {{name: "{country}"}}) '
-            + match_statements
+            + match_agent_groups
             + f"\nCREATE (report:FluNet:Report {{"
             f"  flunetRow: {index}, "
             f'  start: date("{row["Start date"]}"), '
@@ -114,7 +113,7 @@ if __name__ == "__main__":
             f'  processed: {row["Processed"] or 0}, '
             f'  positive: {row["Total positive"] or 0}, '
             f'  negative: {row["Total negative"] or 0} '
-            f"}})-[:IN]->(c)" + create_statements
+            f"}})-[:IN]->(c)" + create_group_relationships
         )
 
     # ncbi_id = ncbi.id_search("Salmonella enterica")
