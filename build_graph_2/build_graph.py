@@ -54,11 +54,10 @@ if __name__ == "__main__":
     merged_transmission_zones = set()
     merged_taxons = set()
 
-    detection_cols = {}
-    for key in flunet_rows[0].keys():
-        ncbi_id = flunet.get_ncbi_id(key)
-        if ncbi_id:
-            detection_cols[key] = ncbi_id
+    # get mapping from flunet columns
+    # to agents or agent groups
+    columns = flunet_rows[0].keys()
+    agent_groups = flunet.get_agent_groups(columns)
 
     for index, row in enumerate(flunet_rows):
         # skip rows where none were collected
@@ -66,6 +65,7 @@ if __name__ == "__main__":
             continue
 
         logger.info("FluNet Index: {index}")
+
         zone = row["Transmission zone"]
         country = row["Territory"]
         if zone not in merged_transmission_zones:
@@ -86,13 +86,13 @@ if __name__ == "__main__":
 
         match_statements = ""
         create_statements = ""
-        for col in detection_cols.keys():
+        for col in agent_groups.keys():
             # skip detection columns with no values
             # or with zero specimens detected
             if not row[col] or row[col] == "0":
                 continue
 
-            ncbi_id = detection_cols[col]
+            ncbi_id = agent_groups[col]
 
             if ncbi_id not in merged_taxons:
                 ncbi_metadata = ncbi.get_metadata(ncbi_id)
