@@ -1,3 +1,3 @@
 # First pass on transforming DONs into a graph
 
-This directory is superceded by build_graph_2
+This directory contains just a cursory sketch and is superseded by build_graph_2
