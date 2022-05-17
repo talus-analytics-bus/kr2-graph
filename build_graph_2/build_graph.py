@@ -47,7 +47,7 @@ def db_merge_dons_ncbi():
 def create_country(country, zone, SESSION):
     """
     For now, just merges the country into its zone,
-    but this needs to be expanded to use geonames.
+    but this should be expanded to use geonames.
     """
     logger.info(f" CREATE country node ({country})")
     SESSION.run(
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         if row["Collected"] == "" or row["Collected"] == "0":
             continue
 
-        logger.info("FluNet Index: {index}")
+        logger.info(f"Creating FluNet Report {index}")
 
         zone = row["Transmission zone"]
         country = row["Territory"]
@@ -108,7 +108,6 @@ if __name__ == "__main__":
                 f"CREATE (report)-[:DETECTED {{count: {row[col]}}}]->(taxon{ncbi_id}) "
             )
 
-        logger.info(f"Creating FluNet Report {index}")
         SESSION.run(
             f'MATCH (c:Country {{name: "{country}"}}) '
             + match_agent_groups
@@ -120,7 +119,7 @@ if __name__ == "__main__":
             f'  processed: {row["Processed"] or 0}, '
             f'  positive: {row["Total positive"] or 0}, '
             f'  negative: {row["Total negative"] or 0} '
-            f"}})-[:FROM]->(c)" + create_group_relationships
+            f"}})-[:IN]->(c)" + create_group_relationships
         )
 
 
