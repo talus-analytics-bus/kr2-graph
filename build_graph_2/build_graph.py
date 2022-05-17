@@ -44,11 +44,20 @@ def db_merge_dons_ncbi():
         time.sleep(0.4)
 
 
+def create_country(country, zone, SESSION):
+    """
+    For now, just merges the country into its zone,
+    but this needs to be expanded to use geonames.
+    """
+    logger.info(f" CREATE country node ({country})")
+    SESSION.run(
+        f'MATCH  (zone:TransmissionZone {{name: "{zone}"}}) '
+        f'CREATE (n:Country:Geo {{name: "{country}"}})-[:IN]->(zone) '
+    )
+
+
 if __name__ == "__main__":
     flunet_rows = flunet.get_rows()
-
-    merged_countries = set()
-    merged_transmission_zones = set()
 
     # get mapping from flunet columns
     # to agents or agent groups
@@ -57,6 +66,9 @@ if __name__ == "__main__":
     # Make sure the agent groups and their
     # taxons exist in the database
     flunet.merge_agent_groups(agent_groups, SESSION)
+
+    created_countries = set()
+    created_transmission_zones = set()
 
     for index, row in enumerate(flunet_rows):
         # skip rows where no samples were collected
@@ -68,24 +80,19 @@ if __name__ == "__main__":
         zone = row["Transmission zone"]
         country = row["Territory"]
 
-        if zone not in merged_transmission_zones:
-            logger.info(f" CREATE transmission zone node ({zone})")
-            SESSION.run(f'CREATE (n:TransmissionZone:Geo {{name: "{zone}"}})')
+        # if it's a new zone, create it before continuing
+        if zone not in created_transmission_zones:
+            flunet.create_transmission_zone(zone, SESSION)
+            created_transmission_zones.add(zone)
 
-            merged_transmission_zones.add(zone)
-
-        if country not in merged_countries:
-            print(f"Country: {country}")
-            logger.info(f" CREATE country node ({country})")
-            SESSION.run(
-                f'MATCH  (zone:TransmissionZone {{name: "{zone}"}}) '
-                f'CREATE (n:Country:Geo {{name: "{country}"}})-[:IN]->(zone) '
-            )
-
-            merged_countries.add(country)
+        # if it's a new country, create the country
+        if country not in created_countries:
+            create_country(country, zone, SESSION)
+            created_countries.add(country)
 
         match_agent_groups = ""
         create_group_relationships = ""
+
         for col in agent_groups.keys():
             # skip detection columns with no values
             # or with zero specimens detected
@@ -101,7 +108,7 @@ if __name__ == "__main__":
                 f"CREATE (report)-[:DETECTED {{count: {row[col]}}}]->(taxon{ncbi_id}) "
             )
 
-        logger.info(f"Merging FluNet Report {index}")
+        logger.info(f"Creating FluNet Report {index}")
         SESSION.run(
             f'MATCH (c:Country {{name: "{country}"}}) '
             + match_agent_groups
@@ -115,9 +122,6 @@ if __name__ == "__main__":
             f'  negative: {row["Total negative"] or 0} '
             f"}})-[:IN]->(c)" + create_group_relationships
         )
-
-    # ncbi_id = ncbi.id_search("Salmonella enterica")
-    # ncbi_metadata = ncbi.get_metadata(ncbi_id)
 
 
 NEO4J_DRIVER.close()
