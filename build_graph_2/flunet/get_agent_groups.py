@@ -8,22 +8,22 @@ import flunet
 # of agents for each column instead of linking
 # to just one
 @cache
-def column_to_ncbi_name():
+def column_to_ncbi_name(key):
     agent_map = {}
     with open("flunet/data/flunet_to_ncbi.csv") as map:
         for row in csv.reader(map):
             flunet, ncbi = row
             agent_map[flunet] = ncbi
 
-    if flunet in agent_map:
-        return agent_map[flunet]
+    if key in agent_map:
+        return agent_map[key]
 
     return None
 
 
 @cache
 def get_ncbi_id(key):
-    ncbi_term = flunet.column_to_ncbi_name(key)
+    ncbi_term = column_to_ncbi_name(key)
 
     if ncbi_term:
         return ncbi.id_search(ncbi_term)
@@ -44,7 +44,7 @@ def get_agent_groups(columns):
     """
     agent_groups = {}
     for key in columns:
-        ncbi_id = flunet.get_ncbi_id(key)
+        ncbi_id = get_ncbi_id(key)
         if ncbi_id:
             agent_groups[key] = ncbi_id
 
