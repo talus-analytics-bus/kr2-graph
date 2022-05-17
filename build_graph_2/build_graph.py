@@ -45,16 +45,6 @@ def db_merge_dons_ncbi():
         time.sleep(0.4)
 
 
-@cache
-def flunet_to_ncbi_id(key):
-    ncbi_term = flunet.column_to_ncbi(key)
-
-    if ncbi_term:
-        return ncbi.id_search(ncbi_term)
-
-    return None
-
-
 logger.disable("__main__")
 
 if __name__ == "__main__":
@@ -66,7 +56,7 @@ if __name__ == "__main__":
 
     detection_cols = {}
     for key in flunet_rows[0].keys():
-        ncbi_id = flunet_to_ncbi_id(key)
+        ncbi_id = flunet.get_ncbi_id(key)
         if ncbi_id:
             detection_cols[key] = ncbi_id
 
@@ -75,7 +65,7 @@ if __name__ == "__main__":
         if row["Collected"] == "" or row["Collected"] == "0":
             continue
 
-        print(f"index {index}")
+        logger.info("FluNet Index: {index}")
         zone = row["Transmission zone"]
         country = row["Territory"]
         if zone not in merged_transmission_zones:
@@ -94,13 +84,6 @@ if __name__ == "__main__":
 
             merged_countries.add(country)
 
-        # logger.info(f"Linking FluNet Report {index} to {row['Territory']}")
-        # SESSION.run(
-        #     f"MATCH (report:FluNet {{flunetRow: {index}}}), "
-        #     f'  (country:Country {{name: "{country}"}}) '
-        #     f"CREATE (report)-[:IN]->(country) "
-        # )
-
         match_statements = ""
         create_statements = ""
         for col in detection_cols.keys():
@@ -117,27 +100,12 @@ if __name__ == "__main__":
                 ncbi.merge_taxon(taxon, SESSION)
                 merged_taxons.add(ncbi_id)
 
-            # logger.info(f"Linking FluNet Report {index} to Taxon {ncbi_id}")
             match_statements += (
                 f'\nMATCH (taxon{ncbi_id}:Taxon {{TaxId: "{ncbi_id}"}}) '
             )
             create_statements += f"\nCREATE (report)-[:DETECTED {{count: {row[col]}}}]->(taxon{ncbi_id}) "
 
         logger.info(f"Merging FluNet Report {index}")
-        # print(
-        #     "\n\n"
-        #     f'MATCH (c:Country {{name: "{country}"}}) '
-        #     + match_statements
-        #     + f"\nCREATE (report:FluNet:Report {{"
-        #     f"  flunetRow: {index}, "
-        #     f'  start: date("{row["Start date"]}"), '
-        #     f"  duration: duration({{days: 7}}), "
-        #     f'  collected: {row["Collected"] or 0}, '
-        #     f'  processed: {row["Processed"] or 0}, '
-        #     f'  positive: {row["Total positive"] or 0}, '
-        #     f'  negative: {row["Total negative"] or 0} '
-        #     f"}})-[:IN]->(c)" + create_statements
-        # )
         SESSION.run(
             f'MATCH (c:Country {{name: "{country}"}}) '
             + match_statements
@@ -155,7 +123,5 @@ if __name__ == "__main__":
     # ncbi_id = ncbi.id_search("Salmonella enterica")
     # ncbi_metadata = ncbi.get_metadata(ncbi_id)
 
-
-# print(metadata)
 
 NEO4J_DRIVER.close()
