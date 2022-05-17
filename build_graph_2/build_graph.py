@@ -52,15 +52,17 @@ if __name__ == "__main__":
 
     merged_countries = set()
     merged_transmission_zones = set()
-    merged_taxons = set()
 
     # get mapping from flunet columns
     # to agents or agent groups
     columns = flunet_rows[0].keys()
     agent_groups = flunet.get_agent_groups(columns)
+    # Make sure the agent groups and their
+    # taxons exist in the database
+    flunet.merge_agent_groups(agent_groups)
 
     for index, row in enumerate(flunet_rows):
-        # skip rows where none were collected
+        # skip rows where no samples were collected
         if row["Collected"] == "" or row["Collected"] == "0":
             continue
 
@@ -68,6 +70,7 @@ if __name__ == "__main__":
 
         zone = row["Transmission zone"]
         country = row["Territory"]
+
         if zone not in merged_transmission_zones:
             logger.info(f" CREATE transmission zone node ({zone})")
             SESSION.run(f'CREATE (n:TransmissionZone:Geo {{name: "{zone}"}})')
@@ -93,12 +96,6 @@ if __name__ == "__main__":
                 continue
 
             ncbi_id = agent_groups[col]
-
-            if ncbi_id not in merged_taxons:
-                ncbi_metadata = ncbi.get_metadata(ncbi_id)
-                taxon = {**ncbi_metadata, "TaxId": ncbi_id}
-                ncbi.merge_taxon(taxon, SESSION)
-                merged_taxons.add(ncbi_id)
 
             match_statements += (
                 f'\nMATCH (taxon{ncbi_id}:Taxon {{TaxId: "{ncbi_id}"}}) '
