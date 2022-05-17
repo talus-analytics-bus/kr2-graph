@@ -56,7 +56,7 @@ def create_country(country, zone, SESSION):
     )
 
 
-if __name__ == "__main__":
+def ingest_flunet():
     flunet_rows = flunet.get_rows()
 
     # get mapping from flunet columns
@@ -121,6 +121,10 @@ if __name__ == "__main__":
             f'  negative: {row["Total negative"] or 0} '
             f"}})-[:IN]->(c)" + create_group_relationships
         )
+
+
+if __name__ == "__main__":
+    ingest_flunet()
 
 
 NEO4J_DRIVER.close()
