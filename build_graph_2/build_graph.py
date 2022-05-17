@@ -120,7 +120,7 @@ if __name__ == "__main__":
             f'  processed: {row["Processed"] or 0}, '
             f'  positive: {row["Total positive"] or 0}, '
             f'  negative: {row["Total negative"] or 0} '
-            f"}})-[:IN]->(c)" + create_group_relationships
+            f"}})-[:FROM]->(c)" + create_group_relationships
         )
 
 
