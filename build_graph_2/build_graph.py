@@ -122,9 +122,17 @@ def ingest_flunet():
             f"}})-[:IN]->(c)" + create_group_relationships
         )
 
+def get_geonames_id(name):
+    pass
 
 if __name__ == "__main__":
-    ingest_flunet()
+    # ingest_flunet()
+
+    # query countries from the database 
+    countries = SESSION.run("MATCH (c:Country) RETURN c")
+    country_names = [node.data()['c']['name'] for node in iter(countries)]
+
+    print(country_names)
 
 
 NEO4J_DRIVER.close()

@@ -16,6 +16,8 @@ pp = pprint.PrettyPrinter(indent=4)
 # pull env vars for auth and create neo4j driver
 NEO4J_AUTH = (os.getenv("NEO4J_USER"), os.getenv("NEO4J_PASS"))
 NEO4J_URI = os.getenv("NEO4J_URI")
+print(NEO4J_URI)
+print(NEO4J_AUTH)
 NEO4J_DRIVER = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
 
 
@@ -38,7 +40,9 @@ def get_db_cursor():
     return (conn, cursor)
 
 
+print('before get_db_cursor')
 DB_CONN, DB_CURSOR = get_db_cursor()
+print('after get_db_cursor')
 
 
 def add_diseases():
@@ -378,20 +382,34 @@ def link_dons_influenza():
             add_serotype_and_link(DONid, DiseaseLevel2, session)
 
 
-# add_diseases()
-# add_disease_types()
-# link_diseases_families()
-# add_symptoms()
-# link_symptoms()
-# add_countries()
-# add_regions()
-# link_regions()
-# add_dons()
-# link_dons_countries()
-# link_dons_diseases()
-# get_nih_taxonomy()
-# add_and_link_taxonomy()
-# link_dons_influenza()
+print('add_diseases')
+add_diseases()
+print('add_disease_types')
+add_disease_types()
+print('link_diseases_families')
+link_diseases_families()
+print('add_symptoms')
+add_symptoms()
+print('link_symptoms')
+link_symptoms()
+print('add_countries')
+add_countries()
+print('add_regions')
+add_regions()
+print('link_regions')
+link_regions()
+print('add_dons')
+add_dons()
+print('link_dons_countries')
+link_dons_countries()
+print('link_dons_diseases')
+link_dons_diseases()
+print('get_nih_taxonomy')
+get_nih_taxonomy()
+print('add_and_link_taxonomy')
+add_and_link_taxonomy()
+print('link_dons_influenza')
+link_dons_influenza()
 
 DB_CONN.close()
 NEO4J_DRIVER.close()
